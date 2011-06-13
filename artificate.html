@@ -5,16 +5,41 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     
+    <!-- loading jquery for brevity -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
     <script type="text/javascript" src="javascript/crossbrowserificate.js"></script>
     <script type="text/javascript" src="javascript/unshift.artificate.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(e) {
+            var dna = new unshift.artificate.DnaArt(document.getElementById('art1'), 300, 750, 
+                {   pairCount: 16, 
+                    ballColor1: 'rgba(100,100,200,.5)', 
+                    ballColor2: 'rgba(100,200,100,0.5)', 
+                    lineColor: 'rgba(100,100,100,0.9)' 
+                });
+            dna.start();
+        });
+    </script>
+    <style>
+        #art1 {
+            position: absolute;
+            top: -200px;
+            right: -20px;
+        }
+        canvas {
+            -moz-transform:rotate(-45deg);
+            -webkit-transform:rotate(-45deg);
+            -o-transform:rotate(-45deg);
+            -ms-transform:rotate(-45deg);
+            filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=-.5);
+        }
+    </style>
 	<title>Artificate testing</title>
-	
 </head>
 
 <body>
 <div id="art1">
     
 </div>
-
 </body>
 </html>

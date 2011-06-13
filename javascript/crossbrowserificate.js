@@ -32,3 +32,27 @@ if ( !window.requestAnimationFrame ) {
 	} )();
 
 }
+
+//delegates :D
+function Delegate(f)
+{
+        this.func = f;
+}
+Delegate.prototype.func = function(){}
+Delegate.create = function(obj, func)
+{
+        var f = function()
+        {
+                var target = arguments.callee.target;
+                var func = arguments.callee.func;
+                if(func && target)
+                    return func.apply(target, arguments);
+                return null;
+        };
+
+        f.target = obj;
+        f.func = func;
+
+        return f;
+}
+

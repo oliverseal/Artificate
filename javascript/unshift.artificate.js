@@ -29,6 +29,7 @@ unshift.artificate.Base.prototype.createElements = function() {
     this.container.appendChild(this.canvas);
 }
 
+
 unshift.artificate.DnaArt = function(containerElement, width, height, options) {
     this.container = containerElement;
     this.width = width;
@@ -81,12 +82,12 @@ unshift.artificate.DnaArt.prototype.update = function() {
         
         requestAnimationFrame(this.updateDelegate, this.canvas);
         this.context.clearRect(0, 0, this.width, this.height);
-        
+
         if (this.currentTime < this.options.framesPerRevolution)
             this.currentTime++;
         else
             this.currentTime = 0;
-        
+            
         for(var i = this.pairs.length-1; i >= 0; i--){
             this.pairs[i].draw(this.currentTime + i * 30, this.options.framesPerRevolution);
         }
@@ -148,4 +149,52 @@ unshift.artificate.DnaArt.BasePair.prototype.draw = function(currentTime, totalT
     this.context.closePath();
     this.context.fill();
     
+}
+
+
+unshift.artificate.HoneyComb = function(containerElement, width, height, options) {
+    this.container = containerElement;
+    this.width = width;
+    this.height = height;
+    this.canvas = null;
+    this.context = null;
+    //default options
+    this.options = {
+        pairCount: 10,
+        //so it will by default take 200 frames to spin a basepair
+        framesPerRevolution: 600,
+        width: this.width,
+        verticalMargin: 5,
+        lineThickness: 16
+    };
+    this.options.merge(options);
+    this.updateDelegate = Delegate.create(this, this.update);
+}
+unshift.artificate.HoneyComb.prototype = new unshift.artificate.Base;
+unshift.artificate.HoneyComb.prototype.constructor = unshift.artificate.DnaArt;
+unshift.artificate.HoneyComb.prototype.parent = unshift.artificate.Base.prototype;
+unshift.artificate.HoneyComb.prototype.start = function() {
+    this.isAnimating = true;
+    if (this.canvas == null)
+        this.createElements();
+    requestAnimationFrame(this.updateDelegate, this.canvas);
+}
+unshift.artificate.HoneyComb.prototype.stop = function(andClear) {
+    this.isAnimating = false;
+}
+
+unshift.artificate.HoneyComb.prototype.update = function() {
+    if (this.isAnimating) {
+        if (this.canvas == null)
+            this.createElements();
+        
+        requestAnimationFrame(this.updateDelegate, this.canvas);
+        this.context.clearRect(0, 0, this.width, this.height);
+        
+        if (this.currentTime < this.options.framesPerRevolution)
+            this.currentTime++;
+        else
+            this.currentTime = 0;
+            
+    }
 }

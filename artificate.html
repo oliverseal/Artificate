@@ -11,17 +11,21 @@
     <script type="text/javascript" src="javascript/unshift.artificate.js"></script>
     <script type="text/javascript">
         $(document).ready(function(e) {
-            var dna = new unshift.artificate.DnaArt(document.getElementById('art1'), 300, 750, 
+            /*var dna = new unshift.artificate.DnaArt(document.getElementById('art'), 300, 750, 
                 {   pairCount: 16, 
                     ballColor1: 'rgba(100,100,200,.5)', 
                     ballColor2: 'rgba(100,200,100,0.5)', 
-                    lineColor: 'rgba(100,100,100,0.9)' 
+                    lineColor: 'rgba(100,100,100,0.9)',
+                    framesPerRevolution: 800
                 });
-            dna.start();
+            dna.start();*/
+            
+            var honeyComb = new unshift.artificate.HoneyComb(document.getElementById('art'), 300, 750, {});
+            honeyComb.start();
         });
     </script>
     <style>
-        #art1 {
+        #art {
             position: absolute;
             top: -200px;
             right: -20px;
@@ -38,7 +42,7 @@
 </head>
 
 <body>
-<div id="art1">
+<div id="art">
     
 </div>
 </body>

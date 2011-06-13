@@ -133,19 +133,23 @@ unshift.artificate.DnaArt.BasePair.prototype.draw = function(currentTime, totalT
     this.context.beginPath();
     
     var indention = (x1 < halfWidth)?this.options.ballRadius:-this.options.ballRadius;
-    x1 = (x1 < halfWidth)? x1 + this.options.ballRadius : x1 - this.options.ballRadius;
-    x2 = (x2 < halfWidth)? x2 + this.options.ballRadius : x2 - this.options.ballRadius;
+    var lineX1 = (x1 < halfWidth)? x1 + this.options.ballRadius : x1 - this.options.ballRadius;
+    var lineX2 = (x2 < halfWidth)? x2 + this.options.ballRadius : x2 - this.options.ballRadius;
+    if ((lineX1 + (this.options.ballRadius) > x1 && lineX1 + (this.options.ballRadius*1.5) > x2)
+        ||
+        (lineX2 + (this.options.ballRadius) > x2 && lineX2 + (this.options.ballRadius*1.5) > x1)
+       ) {
+        this.context.fillStyle = "rgba(0,0,0,0)";
+    }
     var yTop = this.y + (this.height / 2) - (this.options.lineThickness);
     var yBottom = this.y + (this.height / 2) + (this.options.lineThickness);
     var vCenter = this.y + (this.height / 2);
     
-    this.context.fillStyle = this.options.lineColor;
-    
-    this.context.moveTo(x1, yTop);
-    this.context.arcTo(x1 + indention, vCenter, x1, yBottom, this.options.ballRadius);
-    this.context.lineTo(x2, yBottom);
-    this.context.arcTo(x2 - indention, vCenter, x2, yTop, this.options.ballRadius);
-    this.context.lineTo(x1, yTop);
+    this.context.moveTo(lineX1, yTop);
+    this.context.arcTo(lineX1 + indention, vCenter, lineX1, yBottom, this.options.ballRadius);
+    this.context.lineTo(lineX2, yBottom);
+    this.context.arcTo(lineX2 - indention, vCenter, lineX2, yTop, this.options.ballRadius);
+    this.context.lineTo(lineX1, yTop);
     this.context.closePath();
     this.context.fill();
     

@@ -29,6 +29,13 @@ unshift.artificate.Base.prototype.createElements = function() {
     this.container.appendChild(this.canvas);
 }
 
+unshift.artificate.RADIAN_FULL = Math.PI*2;
+unshift.artificate.RADIAN_HALF = Math.PI*2*180;
+unshift.artificate.RADIAN_QUARTER = Math.PI*2*90;
+
+/**** DNA ****
+*
+*/
 
 unshift.artificate.DnaArt = function(containerElement, width, height, options) {
     this.container = containerElement;
@@ -111,12 +118,11 @@ unshift.artificate.DnaArt.BasePair = function(context, y, options) {
 }
 unshift.artificate.DnaArt.BasePair.prototype.draw = function(currentTime, totalTime) {
     var halfWidth = this.options.width/2;
-    var fullRadian = Math.PI*2
     //draw the first ball
     var x1 = (halfWidth - this.options.ballRadius) * Math.sin(2*Math.PI*currentTime/totalTime) + halfWidth;
     this.context.fillStyle = this.options.ballColor1;
     this.context.beginPath();
-    this.context.arc(x1, this.y + this.options.ballRadius, this.options.ballRadius, 0, fullRadian);
+    this.context.arc(x1, this.y + this.options.ballRadius, this.options.ballRadius, 0, unshift.artificate.RADIAN_FULL);
     this.context.closePath();
     this.context.fill();
     
@@ -124,7 +130,7 @@ unshift.artificate.DnaArt.BasePair.prototype.draw = function(currentTime, totalT
     var x2 = -(halfWidth - this.options.ballRadius) * Math.sin(2*Math.PI*currentTime/totalTime) + halfWidth;
     this.context.fillStyle = this.options.ballColor2;
     this.context.beginPath();
-    this.context.arc(x2, this.y + this.options.ballRadius, this.options.ballRadius, 0, fullRadian);
+    this.context.arc(x2, this.y + this.options.ballRadius, this.options.ballRadius, 0, unshift.artificate.RADIAN_FULL);
     this.context.closePath();
     this.context.fill();
     
@@ -155,6 +161,10 @@ unshift.artificate.DnaArt.BasePair.prototype.draw = function(currentTime, totalT
     
 }
 
+
+/**** HoneyComb ****
+*
+*/
 
 unshift.artificate.HoneyComb = function(containerElement, width, height, options) {
     this.container = containerElement;
@@ -202,3 +212,113 @@ unshift.artificate.HoneyComb.prototype.update = function() {
             
     }
 }
+
+/**** ChainsawFlower ****
+*
+*/
+
+unshift.artificate.ChainsawFlower = function(containerElement, width, height, options) {
+    this.container = containerElement;
+    this.width = width;
+    this.height = height;
+    this.canvas = null;
+    this.context = null;
+    this.petals = [];
+    //default options
+    this.options = {
+        petalCount: 2,
+        //so it will by default take 200 frames to spin a basepair
+        framesPerRevolution: 6000,
+        width: this.width,
+        bladeMinWidth: 20,
+        bladeMaxWidth: 50,
+        centerX: this.width/2,
+        centerY: this.height/2,
+        petalLength: 150,
+        petalColor: 'rgba(0,0,0,0.8)',
+        bladeColor: 'rgba(0,0,0,0.8)',
+        lineColor: 'rgba(100,0,0,0.5)'
+    };
+    this.options.merge(options);
+    this.updateDelegate = Delegate.create(this, this.update);
+    this.createElements();
+    
+    for(var i = this.options.petalCount; i >= 0; i--) {
+        var petal = new unshift.artificate.ChainsawFlower.Petal(this.context, this.options);
+        this.petals.push(petal);
+    }
+}
+unshift.artificate.ChainsawFlower.prototype = new unshift.artificate.Base;
+unshift.artificate.ChainsawFlower.prototype.constructor = unshift.artificate.ChainsawFlower;
+unshift.artificate.ChainsawFlower.prototype.parent = unshift.artificate.Base.prototype;
+unshift.artificate.ChainsawFlower.prototype.start = function() {
+    this.isAnimating = true;
+    if (this.canvas == null)
+        this.createElements();
+    requestAnimationFrame(this.updateDelegate, this.canvas);
+}
+unshift.artificate.ChainsawFlower.prototype.stop = function(andClear) {
+    this.isAnimating = false;
+}
+
+unshift.artificate.ChainsawFlower.prototype.update = function() {
+    if (this.isAnimating) {
+        if (this.canvas == null)
+            this.createElements();
+        
+        requestAnimationFrame(this.updateDelegate, this.canvas);
+        this.context.clearRect(0, 0, this.width, this.height);
+        
+        if (this.currentTime < this.options.framesPerRevolution)
+            this.currentTime++;
+        else
+            this.currentTime = 0;
+            
+        for(var i = this.options.petalCount; i >= 0; i--) {
+            this.petals[i].draw(this.currentTime, this.options.framesPerRevolution);
+        }
+    }
+}
+
+unshift.artificate.ChainsawFlower.Petal = function(context, options) {
+    this.context = context;
+    this.options = {
+        width: 200,
+        bladeMinWidth: 20,
+        bladeMaxWidth: 50,
+        petalLength: 170,
+        centerX: 200,
+        centerY: 200,
+        petalColor: 'rgba(0,0,0,0.8)',
+        bladeColor: 'rgba(0,0,0,0.8)',
+        lineColor: 'rgba(0,0,0,0.5)'
+    };
+    this.options.merge(options);
+}
+unshift.artificate.ChainsawFlower.Petal.prototype.draw = function(currentTime, totalTime) {
+    var halfWidth = this.options.width/2;
+    
+    this.context.strokeStyle = this.options.lineColor;
+    this.context.beginPath();
+    this.context.arc(this.options.centerX, this.options.centerY, this.options.petalLength, 0, unshift.artificate.RADIAN_FULL);
+    this.context.closePath();
+    this.context.stroke();
+    this.context.strokeStyle = null;
+    
+    var angle = currentTime/totalTime*this.options.petalLength;
+    var baseLength = this.options.petalLength - this.options.petalLength / ;
+    var arc1Point = {x:this.options.centerX + baseLength*Math.cos(angle-.50), y:this.options.centerY + baseLength*Math.sin(angle-.50)};
+    var arc2Point = {x:this.options.centerX + this.options.petalLength*Math.cos(angle), y:this.options.centerY + this.options.petalLength*Math.sin(angle)};
+    var arc3Point = {x:this.options.centerX + baseLength*Math.cos(angle+.50), y:this.options.centerY + baseLength*Math.sin(angle+.50)};
+    
+    this.context.fillStyle = this.options.petalColor;
+    this.context.beginPath();
+    this.context.moveTo(this.options.centerX, this.options.centerY);
+    this.context.lineTo(arc1Point.x, arc1Point.y);
+    this.context.arcTo(arc2Point.x, arc2Point.y, arc3Point.x, arc3Point.y, this.options.petalLength/8);
+    this.context.lineTo(arc3Point.x, arc3Point.y);
+    this.context.lineTo(this.options.centerX, this.options.centerY);
+    this.context.closePath();
+    this.context.fill();
+}
+
